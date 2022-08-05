@@ -7,7 +7,7 @@ import "hardhat/console.sol";
 
 contract YourContract {
 
-  event SetPurpose(address sender, string purpose);
+  event SetPurpose(address sender, string purpose, uint blockNumber);
 
   string public purpose = "Building Unstoppable Apps!!!";
 
@@ -18,8 +18,8 @@ contract YourContract {
   function setPurpose(string memory newPurpose) public {
       purpose = newPurpose;
       // console.log(msg.sender,"set purpose to",purpose);
-      console.log(block.number)
-      emit SetPurpose(msg.sender, purpose);
+      // console.log()
+      emit SetPurpose(msg.sender, purpose, block.number);
   }
 
   // to support receiving ETH by default
