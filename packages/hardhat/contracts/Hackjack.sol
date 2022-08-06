@@ -6,9 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 contract Hackjack is ERC721 {
     uint256 public minBet = 0.001 ether;
     uint256 public maxBet = 1 ether;
-
     uint256 public counterIDs = 0; // assign each game an index
-
     uint256 public salt = 314159265;
 
     event NewGame(uint256 gameId, address player, uint256 bet, uint8 firstCard, uint8 secondCard, uint8 dealerCard);
