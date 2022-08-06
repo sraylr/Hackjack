@@ -165,6 +165,7 @@ contract YourContract is ERC721 {
         uint8 playerHandTotal = calculateHandTotal(hands[_gameId].playerCards);
         if (playerHandTotal > 21) {
             hands[_gameId].busted = true;
+            // TODO: Resolve Game correctly if player bust
         }
     }
 
