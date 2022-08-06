@@ -9,15 +9,19 @@ contract YourContract {
 
   // event SetPurpose(address sender, string purpose);
 
-  string public purpose = "Building Unstoppable Apps!";
+  uint public salt = 2171828;
+  uint public blockNumber = 0;
 
   constructor() {
     // what should we do on deploy?
   }
 
-  function setPurpose(string memory newPurpose) public {
-      purpose = newPurpose;
-      console.log(msg.sender,"set purpose to",purpose);
+  function getRandomNumber() public {
+      blockNumber = block.number;
+      salt++;
+      console.log("Block number is",blockNumber);
+      console.log(uint(keccak256(abi.encode(blockNumber * salt))));
+
       // emit SetPurpose(msg.sender, purpose);
   }
 }
