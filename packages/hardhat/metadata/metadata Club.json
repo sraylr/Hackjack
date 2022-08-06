@@ -1,0 +1,6 @@
+{
+  "name":"HackJack Club Trophy",
+  "description":"Congratulations you are a HackJack champion!",
+  "image":"ipfs://bafybeievl4yyhdhyegakckdnlr4e3tsw5u63ixqolpx6tjllvwxbgjepiy",
+  "attributes": [{"trait_type":"Trophy","value":"Club"}]
+}

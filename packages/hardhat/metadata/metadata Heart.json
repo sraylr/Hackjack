@@ -1,0 +1,6 @@
+{
+  "name":"HackJack Heart Trophy",
+  "description":"Congratulations you are a HackJack champion!",
+  "image":"ipfs://bafybeidvwb2v2yayybkvzjfmv3ev6ubf6lc6jteghsxjucooh4smddgory",
+  "attributes": [{"trait_type":"Trophy","value":"Heart"}]
+}
