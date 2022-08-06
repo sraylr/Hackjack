@@ -169,7 +169,7 @@ contract YourContract is ERC721 {
         }
     }
 
-    function resolve(uint256 _gameId) internal {
+    function resolve(uint256 _gameId) private {
         uint8 playerHandTotal = calculateHandTotal(hands[_gameId].playerCards);
 
         uint8 dealerHandTotal = calculateHandTotal(hands[_gameId].dealerCards);
