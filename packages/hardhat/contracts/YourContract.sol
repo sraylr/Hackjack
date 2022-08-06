@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.1;
 
 import "hardhat/console.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract YourContract is ERC721 {
+contract YourContract is ERC721URIStorage {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
+    uint256 trophyVersion;
     uint256 public minBet = 0.001 ether;
     uint256 public maxBet = 0.001 ether;
     uint8 public test = 2;
@@ -12,6 +16,7 @@ contract YourContract is ERC721 {
     uint256 public counterIDs = 0; // assign each game an index
 
     uint256 public salt = 314159265;
+
 
     event NewGame(
         uint256 gameId,
@@ -51,7 +56,7 @@ contract YourContract is ERC721 {
         _;
     }
 
-    constructor() ERC721("Hackjack Hand", "JACK") {
+    constructor() ERC721("Hackjack ", "HJACK") {
         cardValues[0] = 11; // A
         cardValues[1] = 2; // 2
         cardValues[2] = 3;
@@ -192,9 +197,9 @@ contract YourContract is ERC721 {
             // require(success, "failed");
             payable(msg.sender).transfer(hands[_gameId].bet * 2);
             emit Winner(_gameId, msg.sender, hands[_gameId].bet * 2);
+            getReward();
 
-            // TODO: Mint reward NFT
-            // _mintReward(_gameId)
+
 
             // Tied
         } else if (playerHandTotal == dealerHandTotal) {
@@ -220,4 +225,49 @@ contract YourContract is ERC721 {
         salt++;
         return uint256(keccak256(abi.encodePacked(blockNumber + salt)));
     }
+
+                // TODO: Mint reward NFT
+            // _mintReward(_gameId)
+            function getReward() internal returns (uint256){
+
+              _tokenIds.increment();
+              string memory tokenURI="https://bafkreid5stht4gxpr45vt7cybz2hyrkomyj7tbgwaayuodfm2ohw5ltdwy.ipfs.nftstorage.link";
+              string memory tokenURI2="https://bafkreie2twejhm23ned7gefcz3gyfayjma6gfksu755nnuvbtzygkqfkhi.ipfs.nftstorage.link";
+              string memory tokenURI3="https://bafkreih7imbnovzy5epplwy6u3mfl4cpka6it36qg2rch2gb7lgacpgkou.ipfs.nftstorage.link";
+              string memory tokenURI4="https://bafkreihlu3twljp4y7muavry6vcphbfc6k35c4iebiyk2i4kwyypmjqopq.ipfs.nftstorage.link";
+
+              uint256 newItemId = _tokenIds.current();
+              trophyVersion=4;
+
+              if(trophyVersion==4){
+                _mint(msg.sender, newItemId);
+                _setTokenURI(newItemId, tokenURI4);
+                trophyVersion-=1;
+                return newItemId;
+                }
+
+              if(trophyVersion==3){
+                _mint(msg.sender, newItemId);
+                _setTokenURI(newItemId, tokenURI3);
+                trophyVersion-=1;
+                return newItemId;
+                  }
+
+              if(trophyVersion==2){
+                  _mint(msg.sender, newItemId);
+                  _setTokenURI(newItemId, tokenURI2);
+                  trophyVersion-=1;
+                  return newItemId;
+                      }
+
+              else{
+                    _mint(msg.sender, newItemId);
+                    _setTokenURI(newItemId, tokenURI);
+                    trophyVersion=4;
+                    return newItemId;
+                          }
+
+
+
+            }
 }
