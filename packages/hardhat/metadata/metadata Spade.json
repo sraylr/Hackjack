@@ -1,0 +1,6 @@
+{
+  "name":"HackJack Spade Trophy",
+  "description":"Congratulations you are a HackJack champion!",
+  "image":"ipfs://bafybeif6yzdrd6psqofdtwqcqs5gendihl2wh7igddj7fldc2fhwubjsdm",
+  "attributes": [{"trait_type":"Trophy","value":"Spade"}]
+}

@@ -1,0 +1,6 @@
+{
+  "name":"HackJack Diamond Trophy",
+  "description":"Congratulations you are a HackJack champion!",
+  "image":"ipfs://bafybeiewfxkjthxp2df7emij2lylgndsrwrhiu2latfe4mecsy5jymjuly",
+  "attributes": [{"trait_type":"Trophy","value":"Diamond"}]
+}
