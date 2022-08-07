@@ -10,6 +10,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     from: deployer,
     args: [1327],
     log: true,
+    value: ethers.utils.parseEther("0.001"),
   });
 
   /*
