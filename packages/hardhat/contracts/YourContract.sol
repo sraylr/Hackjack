@@ -165,10 +165,11 @@ contract YourContract is ERC721 {
         uint8 playerHandTotal = calculateHandTotal(hands[_gameId].playerCards);
         if (playerHandTotal > 21) {
             hands[_gameId].busted = true;
+            // TODO: Resolve Game correctly if player bust
         }
     }
 
-    function resolve(uint256 _gameId) internal {
+    function resolve(uint256 _gameId) private {
         uint8 playerHandTotal = calculateHandTotal(hands[_gameId].playerCards);
 
         uint8 dealerHandTotal = calculateHandTotal(hands[_gameId].dealerCards);
