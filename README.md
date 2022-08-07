@@ -1,3 +1,35 @@
+# HackJack!
+
+![image](https://user-images.githubusercontent.com/100027170/183307341-65ae9914-efaa-4375-b5da-793e7e96d72e.png)
+
+
+## Information
+- Our HackJack polygon implementation is in --> packages/hardhat/contracts/YourContract.sol
+- NFT.Storage files located in --> packages/hardhat/metadata
+
+## Testing functionality 
+
+packages/hardhat/contracts/DemoHj.sol --> testing 
+1.    Send some ETH/MATIC
+2.    Write Contract 6. newGame with minbet value: 0.001
+3.    Read Contract 4. check_hand
+4.    Write Contract 11. Stand
+5.    Read Contract 4. check_hand
+6.    Refresh and check events for Winner
+7.    Go to Tesnet.opensea with wallet to check Reward
+8.    Write Contract 2. becomeVoter
+9.    Refresh and check events for Approval
+10.    Write Contract 12. submitProposal with a charity address and a value under what is in the smart contract
+11.    Read Contract 14. Proposals with proposaliD0
+12.     Write Contract 14. Vote with proposaliD0
+13.    Check Internal Txns
+
+
+
+
+
+
+
 # 🏗 Scaffold-ETH + ▲ Next.js
 
 > everything you need to build on Ethereum! 🚀
