@@ -1,39 +1,35 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.1;
+pragma solidity ^0.8.7;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
-contract HJK is ERC721URIStorage {
+contract DemoHJ is ERC721URIStorage, VRFConsumerBaseV2 {
+    VRFCoordinatorV2Interface COORDINATOR;
+    uint64 s_subscriptionId;
+    address vrfCoordinator = 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed;
+    bytes32 keyHash =
+        0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f;
+    uint32 callbackGasLimit = 100000;
+    uint16 requestConfirmations = 3;
+    uint32 numWords = 2;
+    uint256[] public s_randomWords;
+    uint256 public s_requestId;
+    address s_owner;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    uint256 trophyVersion;
     uint256 public minBet = 0.001 ether;
     uint256 public maxBet = 0.001 ether;
     uint8 public test = 2;
-<<<<<<< Updated upstream
-    uint256 trophyVersion;
-
-=======
     uint256 newItemId;
->>>>>>> Stashed changes
+
     uint256 public counterIDs = 0; // assign each game an index
+
     uint256 public salt = 314159265;
-    uint256 nProposals;
-    uint256 public session;
-
-    mapping(address=>bool) public voter;
-    mapping(uint =>Proposal) public proposals;
-
-    struct Proposal{
-      address payable recipient;
-      uint value;
-      uint nVotes;
-      uint sessionId;
-      bool executed;
-    }
-
-
 
     event NewGame(
         uint256 gameId,
@@ -47,8 +43,6 @@ contract HJK is ERC721URIStorage {
     event DealerHit(uint256 gameId, uint8 card);
     event Busted(uint256 gameId, address player);
     event Winner(uint256 gameId, address player, uint256 value);
-    event Voted(address sender, uint transactionId);
-    event Submission(uint transactionId);
 
     struct Hand {
         uint8[] playerCards;
@@ -74,7 +68,10 @@ contract HJK is ERC721URIStorage {
         _;
     }
 
-    constructor() payable ERC721("HackJack ", "HJACK") {
+    constructor(uint64 subscriptionId)
+        VRFConsumerBaseV2(vrfCoordinator)
+        ERC721("Hackjack ", "HJACK")
+    {
         cardValues[0] = 11; // A
         cardValues[1] = 2; // 2
         cardValues[2] = 3;
@@ -88,14 +85,10 @@ contract HJK is ERC721URIStorage {
         cardValues[10] = 10;
         cardValues[11] = 10;
         cardValues[12] = 10; // K
-        trophyVersion=4;
-
+        COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
+        s_owner = msg.sender;
+        s_subscriptionId = subscriptionId;
     }
-    function deposit() public payable{
-
-    }
-
-    receive() payable external{}
 
     function newGame() public payable {
         require(
@@ -172,6 +165,11 @@ contract HJK is ERC721URIStorage {
         console.log("Card dealt", card);
     }
 
+    function dealChainlinkCard() public returns (uint8 card) {
+        requestRandomWords();
+        card = 4;
+    }
+
     function hit(uint256 _gameId) public playable(_gameId) onlyOwner(_gameId) {
         console.log("Player hits", _gameId);
         dealPlayer(_gameId);
@@ -191,11 +189,11 @@ contract HJK is ERC721URIStorage {
         uint8 playerHandTotal = calculateHandTotal(hands[_gameId].playerCards);
         if (playerHandTotal > 21) {
             hands[_gameId].busted = true;
+            // TODO: Resolve Game correctly if player bust
         }
     }
 
-
-    function resolve(uint256 _gameId) internal {
+    function resolve(uint256 _gameId) private {
         uint8 playerHandTotal = calculateHandTotal(hands[_gameId].playerCards);
 
         uint8 dealerHandTotal = calculateHandTotal(hands[_gameId].dealerCards);
@@ -206,15 +204,12 @@ contract HJK is ERC721URIStorage {
             dealerHandTotal = calculateHandTotal(hands[_gameId].dealerCards);
         }
 
-        if (playerHandTotal > dealerHandTotal || dealerHandTotal > 21) {
+        if (playerHandTotal > 1) {
             hands[_gameId].winner = true;
 
             payable(msg.sender).transfer(hands[_gameId].bet * 2);
             emit Winner(_gameId, msg.sender, hands[_gameId].bet * 2);
-            address comfirmedWinner=handOwner[_gameId];
-            getReward(comfirmedWinner);
-
-
+            getReward();
 
             // Tied
         } else if (playerHandTotal == dealerHandTotal) {
@@ -239,9 +234,6 @@ contract HJK is ERC721URIStorage {
         return uint256(keccak256(abi.encodePacked(blockNumber + salt)));
     }
 
-<<<<<<< Updated upstream
-            function getReward(address _winner) internal returns (uint256){
-=======
     function getReward() internal returns (uint256) {
         _tokenIds.increment();
         string
@@ -262,50 +254,14 @@ contract HJK is ERC721URIStorage {
             trophyVersion -= 1;
             return newItemId;
         }
->>>>>>> Stashed changes
 
-              _tokenIds.increment();
-              string memory tokenURI="https://bafkreid5stht4gxpr45vt7cybz2hyrkomyj7tbgwaayuodfm2ohw5ltdwy.ipfs.nftstorage.link";
-              string memory tokenURI2="https://bafkreie2twejhm23ned7gefcz3gyfayjma6gfksu755nnuvbtzygkqfkhi.ipfs.nftstorage.link";
-              string memory tokenURI3="https://bafkreih7imbnovzy5epplwy6u3mfl4cpka6it36qg2rch2gb7lgacpgkou.ipfs.nftstorage.link";
-              string memory tokenURI4="https://bafkreihlu3twljp4y7muavry6vcphbfc6k35c4iebiyk2i4kwyypmjqopq.ipfs.nftstorage.link";
+        if (trophyVersion == 3) {
+            _mint(msg.sender, newItemId);
+            _setTokenURI(newItemId, tokenURI3);
+            trophyVersion -= 1;
+            return newItemId;
+        }
 
-<<<<<<< Updated upstream
-              uint256 newItemId = _tokenIds.current();
-
-
-              if(trophyVersion==4){
-                _mint(_winner, newItemId);
-                _setTokenURI(newItemId, tokenURI4);
-                trophyVersion-=1;
-                return newItemId;
-                }
-
-              if(trophyVersion==3){
-                _mint(_winner, newItemId);
-                _setTokenURI(newItemId, tokenURI3);
-                trophyVersion-=1;
-                return newItemId;
-                  }
-
-              if(trophyVersion==2){
-                  _mint(_winner, newItemId);
-                  _setTokenURI(newItemId, tokenURI2);
-                  trophyVersion-=1;
-                  return newItemId;
-                      }
-
-              else{
-                    _mint(_winner, newItemId);
-                    _setTokenURI(newItemId, tokenURI);
-                    trophyVersion=4;
-                    return newItemId;
-                          }
-
-
-
-            }
-=======
         if (trophyVersion == 2) {
             _mint(msg.sender, newItemId);
             _setTokenURI(newItemId, tokenURI2);
@@ -339,9 +295,25 @@ contract HJK is ERC721URIStorage {
         require(msg.sender == s_owner);
         _;
     }
+    uint256 nProposals;
+    uint256 public session;
+    mapping(address=>bool) public voter;
+    mapping(uint =>Proposal) public proposals;
+    event Voted(address sender, uint transactionId);
+    event Submission(uint transactionId);
+
+
+    struct Proposal{
+      address payable recipient;
+      uint value;
+      uint nVotes;
+      uint sessionId;
+      bool executed;
+    }
+    receive() payable external{}
 
     function becomeVoter() public{
-      require(balanceOf(msg.sender)>9,"You need more rewards");
+      require(balanceOf(msg.sender)>=1,"You need more rewards");
       uint a=10;
       for(uint i=1; i<=newItemId; i++){
       if(ownerOf(i)==msg.sender && a>0){
@@ -379,7 +351,7 @@ contract HJK is ERC721URIStorage {
       voter[msg.sender]=false;
       emit Voted(msg.sender, proposalId);
 
-      if(proposals[proposalId].nVotes>9){
+      if(proposals[proposalId].nVotes>0){
         executeProposal(proposalId);
       }
 
@@ -388,5 +360,4 @@ contract HJK is ERC721URIStorage {
       return proposals[proposalId].nVotes;
     }
 
->>>>>>> Stashed changes
 }
