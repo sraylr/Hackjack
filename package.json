@@ -66,5 +66,7 @@
       "**/hardhat-ts/**"
     ]
   },
-  "dependencies": {}
+  "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.1.0"
+  }
 }
