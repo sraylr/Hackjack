@@ -68,5 +68,8 @@
   },
   "devDependencies": {
     "@nomiclabs/hardhat-etherscan": "^3.1.0"
+  },
+  "dependencies": {
+    "@chainlink/contracts": "^0.4.2"
   }
 }
