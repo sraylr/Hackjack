@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.1;
-
-contract HackJackDao2{
-  address payable gameAddress;
   uint256 nProposals;
   uint256 public session;
 
@@ -13,6 +8,7 @@ contract HackJackDao2{
   event Submission(uint transactionId);
   event Execution(uint transactionId);
   event Deposit(address sender, uint value);
+  event newVoter(address voter);
 
   struct Proposal{
     address payable recipient;
@@ -22,19 +18,26 @@ contract HackJackDao2{
     bool executed;
   }
 
-  constructor(address payable _gameAddress){
-    gameAddress=_gameAddress;
-  }
+  constructor(){}
 
   receive() payable external{
     emit Deposit(msg.sender, msg.value);
   }
 
   function becomeVoter() public{
-
+    require(balanceOf(msg.sender)>9,"You need more rewards");
+    uint a=10;
+    for(uint i=0; i<newItemId; i++){
+    if(ownerOf(i)==msg.sender && a>0){
+      _burn(i);
+      a-=1;
+      }
+    }
     voter[msg.sender]=true;
-
+    emit newVoter(msg.sender);
   }
+
+
 
   function executeProposal(uint proposalId) private{
     (bool success, )=proposals[proposalId].recipient.call{value: proposals[proposalId].value}("");
@@ -73,11 +76,3 @@ contract HackJackDao2{
   function voteCount(uint proposalId) public view returns (uint256){
     return proposals[proposalId].nVotes;
   }
-
-
-
-
-
-
-
-}
