@@ -5,13 +5,13 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract YourContract is ERC721URIStorage {
+contract HJK is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
-    uint256 trophyVersion;
     uint256 public minBet = 0.001 ether;
     uint256 public maxBet = 0.001 ether;
     uint8 public test = 2;
+    uint256 trophyVersion;
 
     uint256 public counterIDs = 0; // assign each game an index
 
@@ -56,7 +56,7 @@ contract YourContract is ERC721URIStorage {
         _;
     }
 
-    constructor() ERC721("Hackjack ", "HJACK") {
+    constructor() payable ERC721("HackJack ", "HJACK") {
         cardValues[0] = 11; // A
         cardValues[1] = 2; // 2
         cardValues[2] = 3;
@@ -70,6 +70,11 @@ contract YourContract is ERC721URIStorage {
         cardValues[10] = 10;
         cardValues[11] = 10;
         cardValues[12] = 10; // K
+        trophyVersion=4;
+
+    }
+    function deposit() public payable{
+
     }
 
     function newGame() public payable {
@@ -173,6 +178,7 @@ contract YourContract is ERC721URIStorage {
         }
     }
 
+
     function resolve(uint256 _gameId) internal {
         uint8 playerHandTotal = calculateHandTotal(hands[_gameId].playerCards);
 
@@ -197,7 +203,8 @@ contract YourContract is ERC721URIStorage {
             // require(success, "failed");
             payable(msg.sender).transfer(hands[_gameId].bet * 2);
             emit Winner(_gameId, msg.sender, hands[_gameId].bet * 2);
-            getReward();
+            address comfirmedWinner=handOwner[_gameId];
+            getReward(comfirmedWinner);
 
 
 
@@ -226,9 +233,7 @@ contract YourContract is ERC721URIStorage {
         return uint256(keccak256(abi.encodePacked(blockNumber + salt)));
     }
 
-                // TODO: Mint reward NFT
-            // _mintReward(_gameId)
-            function getReward() internal returns (uint256){
+            function getReward(address _winner) internal returns (uint256){
 
               _tokenIds.increment();
               string memory tokenURI="https://bafkreid5stht4gxpr45vt7cybz2hyrkomyj7tbgwaayuodfm2ohw5ltdwy.ipfs.nftstorage.link";
@@ -237,31 +242,31 @@ contract YourContract is ERC721URIStorage {
               string memory tokenURI4="https://bafkreihlu3twljp4y7muavry6vcphbfc6k35c4iebiyk2i4kwyypmjqopq.ipfs.nftstorage.link";
 
               uint256 newItemId = _tokenIds.current();
-              trophyVersion=4;
+
 
               if(trophyVersion==4){
-                _mint(msg.sender, newItemId);
+                _mint(_winner, newItemId);
                 _setTokenURI(newItemId, tokenURI4);
                 trophyVersion-=1;
                 return newItemId;
                 }
 
               if(trophyVersion==3){
-                _mint(msg.sender, newItemId);
+                _mint(_winner, newItemId);
                 _setTokenURI(newItemId, tokenURI3);
                 trophyVersion-=1;
                 return newItemId;
                   }
 
               if(trophyVersion==2){
-                  _mint(msg.sender, newItemId);
+                  _mint(_winner, newItemId);
                   _setTokenURI(newItemId, tokenURI2);
                   trophyVersion-=1;
                   return newItemId;
                       }
 
               else{
-                    _mint(msg.sender, newItemId);
+                    _mint(_winner, newItemId);
                     _setTokenURI(newItemId, tokenURI);
                     trophyVersion=4;
                     return newItemId;

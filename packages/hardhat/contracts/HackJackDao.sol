@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.1;
 
-contract HackJackDao{
+contract HackJackDao2{
   address payable gameAddress;
   uint256 nProposals;
   uint256 public session;
 
-  mapping(address=>bool) voter;
+  mapping(address=>bool) public voter;
   mapping(uint =>Proposal) public proposals;
 
   event Voted(address sender, uint transactionId);
@@ -18,6 +18,7 @@ contract HackJackDao{
     address payable recipient;
     uint value;
     uint nVotes;
+    uint sessionId;
     bool executed;
   }
 
@@ -44,18 +45,21 @@ contract HackJackDao{
   }
 
   function submitProposal(address payable _recipient, uint _value) public{
-    require(voter[msg.sender]==true);
+    require(voter[msg.sender]==true, "You are not a voter");
+    require(_value<=address(this).balance, "Insufficient funds in the DAO");
 
-    proposals[nProposals]=Proposal(_recipient, _value,0, false);
+    proposals[nProposals]=Proposal(_recipient, _value,0,session, false);
 
     emit Submission(nProposals);
     nProposals+=1;
 
+
   }
 
   function vote(uint proposalId) public{
-    require(voter[msg.sender]==true);
-    require(proposalId<=nProposals);
+    require(voter[msg.sender]==true, "You are not a voter");
+    require(proposalId<=nProposals,"Incorrect ProposalId");
+    require(proposals[proposalId].sessionId==session,"This Proposal has expired");
 
     proposals[proposalId].nVotes+=1;
     voter[msg.sender]=false;
